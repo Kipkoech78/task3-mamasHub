@@ -1,23 +1,43 @@
-import logo from './logo.svg';
+
+import { useEffect, useState } from 'react';
 import './App.css';
+import BasicTable from './BasicTable';
 
 function App() {
+  const [users, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
+   useEffect(()=>{
+    fetch("https://jsonplaceholder.typicode.com/users", {
+      method:"GET"
+    }).then((response)=>{
+      if(!response.ok){
+        throw Error("network Error")
+      }else{
+        return response.json();
+      }
+    }).then((data) =>{
+      console.log(data)
+      setData(data)
+      setLoading(false)
+    }).catch((err)=>{
+      setError(err.message);
+      setLoading(false)
+    })
+   },[])
   return (
-    <div className="App">
+    <div>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+       <h1> Fetch Users From API</h1>
       </header>
+      {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error}</p>
+            ) : (
+              <BasicTable data = {users} />
+            )}
+      
     </div>
   );
 }
